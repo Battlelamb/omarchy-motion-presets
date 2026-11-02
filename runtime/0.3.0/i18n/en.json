@@ -1,0 +1,27 @@
+{
+  "search": "Search motion presets…",
+  "loading": "Loading…",
+  "empty": "No matching items",
+  "loadFailed": "Unable to load catalogue. Check the backend and try Refresh.",
+  "apply": "Apply motion",
+  "copy": "Copy",
+  "launch": "Launch",
+  "export": "Export",
+  "restore": "Restore",
+  "confirm": "Keep effect",
+  "select": "Select an item",
+  "refresh": "Refresh",
+  "working": "Working…",
+  "keys": "Arrows select · Enter apply · Esc close",
+  "results": {
+    "one": "%1 preset shown",
+    "other": "%1 presets shown"
+  },
+  "title": "Motion Presets",
+  "explore": "Explore",
+  "configure": "Configure",
+  "clearSearch": "Clear search",
+  "details": "Selection details",
+  "subtitle": "Choose how your desktop moves.",
+  "safety": "Session-only. Restore refuses external changes."
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "reduced",
+    "label": "Reduced motion",
+    "detail": "Disable compositor animations; restore your previous enabled state.",
+    "settings": {
+      "animations.enabled": false
+    }
+  },
+  {
+    "id": "direct",
+    "label": "Direct workspace transitions",
+    "detail": "Disable wraparound direction; never enable disabled animations.",
+    "settings": {
+      "animations.workspace_wraparound": false
+    }
+  },
+  {
+    "id": "wraparound",
+    "label": "Wraparound workspace transitions",
+    "detail": "Use wraparound direction; never enable disabled animations.",
+    "settings": {
+      "animations.workspace_wraparound": true
+    }
+  },
+  {"id":"off","label":"Off","detail":"Disable animations and workspace wraparound; Restore returns actual prior scalar values.","settings":{"animations.enabled":false,"animations.workspace_wraparound":false}}
+]
