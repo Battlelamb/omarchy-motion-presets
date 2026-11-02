@@ -1,130 +1,97 @@
 # Motion Presets
 
-**Less motion. Explicit changes. A way back.**
+**Scalar motion controls, explicit trials, and a recorded way back.**
 
-[![Component checks](https://github.com/Battlelamb/omarchy-motion-presets/actions/workflows/ci.yml/badge.svg)](https://github.com/Battlelamb/omarchy-motion-presets/actions/workflows/ci.yml)
+A native Omarchy panel for disabling animations and choosing workspace wraparound behavior. Changes affect the current compositor session, never startup configuration.
 
-[Presets](#four-scalar-presets) · [Controls](#choose-compare-preview) · [Install](#install-and-open) · [Settings](#make-it-yours) · [Recovery](#restore-without-overwriting-other-work)
+> **v0.4.0 source candidate.** This change does not install or qualify live Apply/Preview/Keep/Restore. The separate full-shell upgrade/rollback gate remains blocked. [Validation history](docs/VALIDATION.md).
+>
+> **Subtle, snappy, smooth and expressive curve modes, and animation speed, remain unimplemented.** The known API rounds animation reads and cannot exactly undo overrides/inheritance. Scalar toggles are not substitutes. [API limitation](BACKEND.md#motion-specific-scope).
 
-A native Omarchy panel for reducing animations and changing workspace wraparound direction. Compare actual values, try a timed Preview, or save your own scalar settings. Changes affect the current compositor session, not Hyprland's startup configuration.
 
-> [!WARNING]
-> **The requested subtle, snappy, smooth and expressive curve modes, plus animation speed, are still missing.** This snapshot implements four scalar presets only. The inspected API cannot exactly snapshot and restore curve precision and inheritance; these controls are not renamed substitutes. [Why this remains incomplete →](BACKEND.md#motion-specific-scope)
+![Motion Presets 0.4.0 native Browse with illustrative catalogue data](preview.png)
 
-> [!NOTE]
-> **Development source snapshot · 0.3.0**, not a stable release or tagged build. Live testing verified the new runtime loaded and the populated panel opened, was captured and closed. Live Apply/Preview/Keep/Restore actions are not qualified; the separate full nested upgrade/rollback gate remains blocked.
+*Illustrative **0.4.0** native Qt component render with fictional/original example data. No installed library, desktop action or full-shell behavior is demonstrated. [Preview provenance](docs/PREVIEW.md).*
 
-![Historical Motion Presets panel showing Reduced motion and two workspace transition choices](preview.png)
+<details>
+<summary>Preview native saved settings</summary>
 
-*Historical 0.2.1 native Qt/Quickshell capture from an isolated headless compositor, using an illustrative catalogue. Actions were not exercised. It shows the earlier three-choice UI, not the current four presets or 0.3.0 controls. [Preview provenance](docs/PREVIEW.md).*
+![Motion Presets 0.4.0 native Configure](configure-preview.png)
 
-## Four scalar presets
+*Illustrative Configure view; fields may scroll. The capture does not exercise Save or Reset.*
+
+</details>
+
+## Four scalar choices
 
 | Preset | Animations | Workspace wraparound |
 |:---|:---|:---|
-| **Reduced motion** | Disable | Leave unchanged |
-| **Direct workspace transitions** | Leave unchanged | Disable |
-| **Wraparound workspace transitions** | Leave unchanged | Enable |
-| **Off** | Disable | Disable |
+| Reduced motion | Disable | Unchanged |
+| Direct workspace transitions | Unchanged | Disable |
+| Wraparound workspace transitions | Unchanged | Enable |
+| Off | Disable | Disable |
 
-Only `animations.enabled` and `animations.workspace_wraparound` are changed. Bundled presets never enable animations. A captured or imported enabled state also cannot re-enable animations you later disabled; **explicit Restore** can return the actual recorded enabled state.
+Only `animations.enabled` and `animations.workspace_wraparound` are admitted. Bundled presets never enable animations. Captures/imports may remember an enabled state, but Apply/Preview cannot re-enable animations you subsequently disabled. Explicit Restore can return the actual recorded state.
 
-## Choose, compare, preview
+## Select, compare, try
 
-Type to search and use the arrow keys to select. Clicking a tile selects it; it does not apply it. Open **More** for secondary actions, capture/import fields, favorites and collections.
+Search and use the arrow keys to select; clicking a row selects without applying. **More** holds secondary actions and capture/import fields.
 
-| Control | What happens |
+| Control | Result |
 |:---|:---|
-| **Enter / Apply** | Apply the selected scalar settings for this compositor session. No countdown. |
-| **More → Compare** | Read current values and show a before → after diff. No setter or recovery snapshot is written. |
-| **More → Preview** | Apply a 15-second trial, with rollback owned by a detached watchdog rather than the panel. |
-| **Keep** | Confirm only the matching current, unexpired trial. The original Restore snapshot remains available. |
-| **Restore** | Return the first recorded session baseline, not the selected preset's defaults. Works with an empty search result. |
-| **More → Capture** | Name and save the current scalar settings without changing them. |
-| **More → Export preset / Import** | Copy versioned JSON from the result area or paste it into the action-data field. Import stores data; Apply is a separate step. |
-| **Escape / click outside** | Dismiss, not Undo. Escape first backs out of Configure. An active Preview still has its independent watchdog. |
+| Enter / primary button | Apply by default; choose Preview as the saved primary action in Configure. Only an advertised action is eligible. |
+| Apply | Session-only scalar change, without a timer. |
+| Compare | Read actual values and display a diff; no setter or journal write. |
+| Preview | Start a **15-second** trial with an independent detached watchdog. |
+| Keep | Confirm the matching, unexpired trial; retain the original Restore baseline. |
+| Restore | Restore the first recorded baseline, even with no search results. |
+| Capture | Name and save the current scalar values without changing them. |
+| Export preset / Import | Display or paste strict versioned JSON. Import saves inert data; applying is separate. |
+| Escape / outside click | Dismiss, not Undo. Escape first leaves Configure; closing does not stop trial recovery. |
 
-## Install and open
+## Configure without applying
 
-Requires the **Omarchy Quattro shell**, compatible Quickshell/Qt with native `qs.Ui` and `qs.Commons`, system Python 3 and `hyprctl`. The provider adapter is restricted to **Hyprland Lua 0.56.2**; other versions fail closed. No sibling plugin or shared installed framework is required.
+Choose **Save settings** to persist options. Saving any option, including Preview as primary, calls no compositor setter and never starts a trial.
 
-Plugins run unsandboxed inside the shell. Review source and the limits above before installing this development snapshot:
+| Option | Choices; default first |
+|:---|:---|
+| Primary action (`primaryAction`) | `apply`, `preview` |
+| Density (`density`) | `comfortable`, `compact` |
+| Layout (`layout`) | `list`, `grid` |
+| Sort order (`sortOrder`) | `default`, `name`, `favorites-first` |
+| Show scalar summaries (`showDiffs`) | `true`, `false`; catalogue text only |
+
+Favorites, recents and named collections are local. Keep up to **32** named captures/imports; duplicate names are refused, not overwritten. Reset clears preferences and organization, **not** custom presets or recovery journals, and does not restore compositor state.
+
+Preferences and `custom-presets.json` live outside installed source under `${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/lego/motion-presets/`. Recovery lives under `${XDG_STATE_HOME:-$HOME/.local/state}/omarchy-motion-presets/`. [CLI, import format and bounds](BACKEND.md).
+
+## Open and manage
+
+Requires Omarchy Quattro, compatible Quickshell/Qt (`qs.Ui`, `qs.Commons`), system Python 3 and **Hyprland Lua 0.56.2**. Other provider versions fail closed. No sibling plugin is required; plugins run unsandboxed inside the shell.
 
 ```sh
 omarchy plugin add https://github.com/Battlelamb/omarchy-motion-presets --enable
 omarchy-shell shell summon leviathan.motion-presets
-```
-
-Installation does not automatically apply a motion preset or add a shortcut.
-
-<details>
-<summary><strong>Optional: Super+Space → Appearance → Motion Presets</strong></summary>
-
-Back up `~/.config/omarchy/extensions/omarchy-menu.jsonc`, then merge this entry into its existing top-level object. Preserve other entries and JSONC comments; do not replace the file. This menu entry is **not auto-installed**.
-
-```json
-{
-  "appearance.motion-presets": {
-    "label": "Motion Presets",
-    "action": "omarchy-shell shell summon leviathan.motion-presets"
-  }
-}
-```
-
-</details>
-
-## Make it yours
-
-- **Configure → Show scalar motion summaries** toggles catalogue summaries, not animation behavior. Use **Save settings** to commit it.
-- Favorites, recent selections and named collections are local. **More** exposes the collection controls.
-- Keep up to **32 named captures/imports**. Duplicate names are refused, not overwritten. Imported JSON is inert, plugin-specific data, never Lua or commands.
-- **Configure → Reset preferences** clears options, favorites, recents and collections only. It does **not** delete saved presets or recovery receipts, and does not restore compositor values.
-
-| Stored data | Location |
-|:---|:---|
-| Preferences | `${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/lego/motion-presets/preferences.json` |
-| Named presets | `custom-presets.json` beside preferences |
-| Per-session recovery | `${XDG_STATE_HOME:-$HOME/.local/state}/omarchy-motion-presets/` |
-
-Saved data lives outside the installed source so an update does not replace it. [Import format, bounds and backend CLI →](BACKEND.md)
-
-## Restore without overwriting other work
-
-The backend records actual values before applying changes and checks them again before writing. Restore and timed rollback **refuse divergent external edits** and retain the recovery journal instead of overwriting another tool's work. Config reloads and other appearance plugins can therefore cause a deliberate conflict.
-
-This is value-level conflict detection, not a global compositor lock. Same-value edits that change away and back (ABA) are indistinguishable. A watchdog cannot survive logout, missing runtime files or broken IPC indefinitely. Keep the installed source available until recovery completes; do not delete a journal to hide an error.
-
-**Restore before disabling or removing:**
-
-```sh
+# Restore in the panel BEFORE disabling or removing:
 omarchy plugin disable leviathan.motion-presets
-# Only if you also want to uninstall:
 omarchy plugin remove leviathan.motion-presets
 ```
 
-Remove the optional menu entry separately. Closing, disabling or removing the panel is not an alternative to Restore.
+Install does not apply a preset or add shortcuts. An existing Super+Space → Appearance entry can summon `leviathan.motion-presets`; preserve existing menu entries if adding one manually.
 
-<details>
-<summary><strong>Checks, qualification limits and troubleshooting</strong></summary>
+## Recovery limits and checks
 
-- Frozen 0.3.0 offline logic, transport and native component checks passed. These use isolated fake HOME/IPC and real Lua fixtures, not real compositor action qualification.
-- Owner-authorized live testing checked new runtime loading and populated-panel open/capture/close only. The full nested old/new/rollback gate remains blocked, and the missing curve modes and speed control remain open requirements.
-- The **Component checks** badge links to this repository's actual `ci.yml` status. It is not a claim that desktop, GPU or recovery integration passed. See the [workflow](.github/workflows/ci.yml) for the exact hosted checks.
+The first actual baseline survives later applications and preference changes. Pending intent is durable before setters; failures attempt compensation to the immediately previous values. Restore/timeout refuse divergent external edits and preserve the receipt. This is value-level conflict detection, not a global compositor lock: same-value **ABA edits remain undetectable**. A watchdog cannot survive logout, missing runtime files or broken IPC indefinitely. Preserve the installed source and journal until recovery completes; Reset and panel dismissal are not recovery.
 
-From a reviewed checkout, with an existing private scratch directory in `TMPDIR`:
+From a reviewed checkout with an existing private `TMPDIR`:
 
 ```sh
 TMPDIR="${TMPDIR:?Set an existing private scratch directory}" env -u PYTHONPATH PATH=/usr/bin /usr/bin/python3 scripts/run-tests.py --backend-only
-# Full local component/native suite, using the same private TMPDIR:
 bash test.sh
 ```
 
-If the panel cannot open, check the shell requirements and use **Refresh** after a catalogue error. If Restore reports a conflict, inspect external edits and IPC, preserve the receipt, resolve the conflict deliberately, then retry. Reset preferences is not recovery. Avoid posting private desktop captures, raw logs or window titles in reports.
+Offline fake-HOME/IPC and native component checks are not live action qualification or hosted CI results. [Preview provenance](docs/PREVIEW.md) records the current illustrative v0.4.0 Browse/Configure captures separately from historical images. These screenshots demonstrate presentation, not desktop actions.
 
-[Backend contract](BACKEND.md) · [Recorded validation history](docs/VALIDATION.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+[Backend contract](BACKEND.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
-</details>
-
----
-
-**GPL-3.0-only** · Independent community plugin, not an official Omarchy or HyDE release. HyDE selector lineage and native integration credits are documented in [source notices](NOTICE.md) and [backend notices](NOTICE.backend.md). [Full license](LICENSE).
+**GPL-3.0-only.** Independent community plugin, not an official Omarchy or HyDE release. Existing donor/source credits remain in [NOTICE.md](NOTICE.md) and [NOTICE.backend.md](NOTICE.backend.md); [full license](LICENSE).

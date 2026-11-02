@@ -16,7 +16,13 @@ SCHEMAS = {
     'shader-deck': {'decoration.screen_shader': 'shader'},
 }
 SCHEMA = SCHEMAS[SLUG] if SLUG != 'TEMPLATE' else {}
-PREFERENCE_SCHEMA = {'showDiffs': {'type': 'boolean', 'default': True, 'label': 'Show scalar motion summaries'}}
+PREFERENCE_SCHEMA = {
+    'density': {'type': 'enum', 'default': 'comfortable', 'choices': ['comfortable', 'compact'], 'label': 'Density'},
+    'layout': {'type': 'enum', 'default': 'list', 'choices': ['grid', 'list'], 'label': 'Layout'},
+    'sortOrder': {'type': 'enum', 'default': 'default', 'choices': ['default', 'name', 'favorites-first'], 'label': 'Sort order'},
+    'showDiffs': {'type': 'boolean', 'default': True, 'label': 'Show scalar motion summaries'},
+    'primaryAction': {'type': 'enum', 'default': 'apply', 'choices': ['apply', 'preview'], 'label': 'Primary action'},
+}
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import preferences
 

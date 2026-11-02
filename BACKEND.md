@@ -1,19 +1,30 @@
-# Motion Presets backend · v0.3.0
+# Motion Presets backend · v0.4.0
 
 ## Commands and schema
 
 Primary/secondary actions in exact advertised order: `apply`, `restore`, `favorite`, `capture`, `import`, `export-preset`, `compare`, `preview`, `confirm` (Keep).
 
 ```
-/usr/bin/python3 runtime/0.3.0/backend.py catalog
-/usr/bin/python3 runtime/0.3.0/backend.py action --id reduced --verb apply --apply
-/usr/bin/python3 runtime/0.3.0/backend.py action --id off --verb preview --apply
-/usr/bin/python3 runtime/0.3.0/backend.py action --id off --verb confirm --apply
-/usr/bin/python3 runtime/0.3.0/backend.py action --id restore:last --verb restore --apply
-/usr/bin/python3 runtime/0.3.0/backend.py preferences --apply --payload '{"options":{"showDiffs":false}}'
+/usr/bin/python3 runtime/0.4.0/backend.py catalog
+/usr/bin/python3 runtime/0.4.0/backend.py action --id reduced --verb apply --apply
+/usr/bin/python3 runtime/0.4.0/backend.py action --id off --verb preview --apply
+/usr/bin/python3 runtime/0.4.0/backend.py action --id off --verb confirm --apply
+/usr/bin/python3 runtime/0.4.0/backend.py action --id restore:last --verb restore --apply
+/usr/bin/python3 runtime/0.4.0/backend.py preferences --apply --payload '{"options":{"showDiffs":false}}'
 ```
 
 Apply persists for the session without a timer; Preview starts the independent 15-second rollback. Rows: `reduced`, `direct`, `wraparound`, `off`, plus named captures. The allowlist is exactly boolean `animations.enabled` and `animations.workspace_wraparound`. Bundled rows never enable animations. Captures/imports may remember true as inert data, but Apply/Preview/Compare clamp that field to false if the current animation setting is disabled. Explicit Restore may restore the actual prior enabled state.
+
+## Preview as the primary action
+
+Saved `primaryAction` is enum `apply` (default) / `preview`. The catalogue keeps
+its existing advertised action order, including `preview`. The UI chooses the
+saved primary only when that action is advertised; configuration never invokes
+it. Explicit Apply remains untimed and Preview remains a 15-second trial.
+
+```
+/usr/bin/python3 runtime/0.4.0/backend.py preferences --apply --payload '{"options":{"primaryAction":"preview"}}'
+```
 
 ## Motion-specific scope
 
@@ -27,14 +38,23 @@ Only `hyprctl -j version`, `hyprctl -j getoption <allowlisted dotted key>` and g
 
 Every write/action requires `--apply`; success is JSON with `ok:true`, failure is nonzero JSON with plain bounded text and no traceback. Unexpected options, inappropriate payloads and invalid membership fail closed. CLI payloads are JSON objects limited to **16384 UTF-8 bytes**; duplicate keys, nonfinite numbers, malformed Unicode and nesting beyond 12 levels are rejected. ID strings never become commands or output paths. Catalogue reads do no IPC or writes and expose fresh rows, `preferences` and `settingsSchema`.
 
+## v0.4.0 display preferences
+
+The exact enum keys are `density` (`comfortable` default, `compact`), `layout`
+(`list` default, `grid`), and `sortOrder` (`default` default, `name`,
+`favorites-first`). They affect native catalogue presentation only. Existing
+stores without these keys receive defaults without an implicit write; Reset
+returns those defaults. The UI owns stable sorting and fresh action admission.
+All settings writes remain local preference operations, never compositor setters.
+
 ## Preferences
 
-`PREFERENCE_SCHEMA` is passed to the local D-owned helper's exact `read`, `change`, `reset`, `toggle`, `remember` APIs. Storage is `${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/lego/<slug>/preferences.json`, outside the installed source. The helper bounds reads, rejects unsafe files/ancestor symlinks, locks updates and uses fsync plus atomic replacement. Corrupt preferences are not silently reset.
+`PREFERENCE_SCHEMA` is passed to the bundled `preferences.py` helper's exact `read`, `change`, `reset`, `toggle`, `remember` APIs. Storage is `${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/lego/<slug>/preferences.json`, outside the installed source. The helper bounds reads, rejects unsafe files/ancestor symlinks, locks updates and uses fsync plus atomic replacement. Corrupt preferences are not silently reset.
 
 ```
-/usr/bin/python3 runtime/0.3.0/backend.py preferences
-/usr/bin/python3 runtime/0.3.0/backend.py preferences --apply --payload '{"reset":true}'
-/usr/bin/python3 runtime/0.3.0/backend.py preferences --apply --payload '{"favorites":["known-id"],"collections":{"Desk":["known-id"]}}'
+/usr/bin/python3 runtime/0.4.0/backend.py preferences
+/usr/bin/python3 runtime/0.4.0/backend.py preferences --apply --payload '{"reset":true}'
+/usr/bin/python3 runtime/0.4.0/backend.py preferences --apply --payload '{"favorites":["known-id"],"collections":{"Desk":["known-id"]}}'
 ```
 
 Reads return `{ok,preferences,settingsSchema,message}`. Patches accept only `options`, `favorites`, `collections`; recent/version cannot be written. Reset is the sole-key `{reset:true}` request and resets **only preferences**, never custom presets, generated effects or transaction journals. Favorites may retain stale IDs inertly; Favorite actions require fresh membership. Recents update only after confirmed Apply/Preview/export. If recent persistence fails after an externally confirmed action, success remains truthful with a warning rather than reporting an invented action failure.
@@ -59,14 +79,14 @@ Run from this checkout, with an existing approved private scratch directory:
 TMPDIR="${TMPDIR:?Set an existing private scratch directory}" env -u PYTHONPATH PATH=/usr/bin /usr/bin/python3 scripts/run-tests.py --backend-only
 ```
 
-The shipped runner uses offline bwrap, unshared network, cleared environment, fresh fake HOME, hidden real HOME and `/run`, no live display/compositor sockets, read-only source/system files and fake IPC. The fake `hyprctl` executes generated Lua with the installed system Lua against an observable fake `hl` object. This proves logic/transport, not C++ compositor/GPU integration. Full native/component gate: `bash test.sh` with the same TMPDIR. Test counts, exact commands, source hashes and immutable RED/GREEN receipts are enumerated in ignored `release-output/v030-result.json`; old validation receipts remain historical rather than overwritten.
+The shipped runner uses offline bwrap, unshared network, cleared environment, fresh fake HOME, hidden real HOME and `/run`, no live display/compositor sockets, read-only source/system files and fake IPC. The fake `hyprctl` executes generated Lua with the installed system Lua against an observable fake `hl` object. This proves logic/transport, not C++ compositor/GPU integration. Full native/component gate: `bash test.sh` with the same TMPDIR. Historical 0.3.0 counts, commands, source hashes and RED/GREEN receipts are held in private ignored `release-output/v030-result.json`, which is not shipped or required by the documented runners; old validation receipts remain historical rather than overwritten.
 
 ## Named captures, strict import/export
 
 ```
-/usr/bin/python3 runtime/0.3.0/backend.py action --id capture:current --verb capture --apply --payload '{"name":"My desk"}'
-/usr/bin/python3 runtime/0.3.0/backend.py action --id <known-id> --verb export-preset --apply
-/usr/bin/python3 runtime/0.3.0/backend.py action --id import:preset --verb import --apply --payload '<versioned preset JSON>'
+/usr/bin/python3 runtime/0.4.0/backend.py action --id capture:current --verb capture --apply --payload '{"name":"My desk"}'
+/usr/bin/python3 runtime/0.4.0/backend.py action --id <known-id> --verb export-preset --apply
+/usr/bin/python3 runtime/0.4.0/backend.py action --id import:preset --verb import --apply --payload '<versioned preset JSON>'
 ```
 
 Capture reads actual allowlisted compositor values but calls no setter and writes no recovery journal. Import validates before storage and does no IPC. Export returns `{ok,message,preset,detail,preferences?}` containing inert JSON, never writes to a caller-chosen output path and never evaluates data. Apply is a separate explicit operation after import.

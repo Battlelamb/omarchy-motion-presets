@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0 — development/testing source snapshot
+
+- Choose Apply or advertised timed Preview as the saved primary action. Configuring the choice does not change compositor state; curve/speed controls remain API-limited.
+- Add saved grid/list layout, comfortable/compact density and deterministic default/name/favorites-first ordering. Preserve legacy preferences outside the installed source and explicit Reset.
+- Refresh the native Explore/Configure surfaces and plugin-specific documentation. Keep standalone packages, explicit actions and recovery guards.
+- Synchronize native cancellation fixtures on bounded child readiness instead of a fixed startup delay; production process ownership is unchanged.
+- Final qualification results and limits are recorded separately; source publication is not live-action, full-shell, GPU or marketplace approval.
+
 ## 0.3.0 — UNRELEASED qualification candidate
 
 - Add named scalar captures, inert import/export, Compare and independent timed Preview/Keep/Restore. Requested subtle/snappy/smooth/expressive curves and speed remain unimplemented; scope is not reduced.
