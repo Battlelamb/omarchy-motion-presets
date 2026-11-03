@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
-  "id": "leviathan.motion-presets",
+  "id": "battlelamb.motion-presets",
   "name": "Motion Presets",
-  "version": "0.4.0",
-  "author": "Ömer Eren",
+  "version": "0.4.1",
+  "author": "Battlelamb",
   "license": "GPL-3.0-only",
-  "description": "Choose a small runtime motion preset and explicitly Apply. Restore returns the recorded previous values unless they changed externally. No persistent config rewrite or automatic startup effect. Open: omarchy-shell shell summon leviathan.motion-presets. Type to search; arrows select; Enter acts; Esc closes.",
+  "description": "Choose a small runtime motion preset and explicitly Apply. Restore returns the recorded previous values unless they changed externally. No persistent config rewrite or automatic startup effect. Open: omarchy-shell shell summon battlelamb.motion-presets. Type to search; arrows select; Enter acts; Esc closes.",
   "kinds": [
     "overlay"
   ],
   "keepLoaded": true,
   "entryPoints": {
-    "overlay": "runtime/0.4.0/MotionPresets.qml"
+    "overlay": "runtime/0.4.1/MotionPresets.qml"
   }
 }

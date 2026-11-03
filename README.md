@@ -4,7 +4,7 @@
 
 A native Omarchy panel for disabling animations and choosing workspace wraparound behavior. Changes affect the current compositor session, never startup configuration.
 
-> **v0.4.0 source candidate.** This change does not install or qualify live Apply/Preview/Keep/Restore. The separate full-shell upgrade/rollback gate remains blocked. [Validation history](docs/VALIDATION.md).
+> **v0.4.1 source candidate.** This change does not install or qualify live Apply/Preview/Keep/Restore. The separate full-shell upgrade/rollback gate remains blocked. [Validation history](docs/VALIDATION.md).
 >
 > **Subtle, snappy, smooth and expressive curve modes, and animation speed, remain unimplemented.** The known API rounds animation reads and cannot exactly undo overrides/inheritance. Scalar toggles are not substitutes. [API limitation](BACKEND.md#motion-specific-scope).
 
@@ -65,19 +65,23 @@ Favorites, recents and named collections are local. Keep up to **32** named capt
 
 Preferences and `custom-presets.json` live outside installed source under `${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/lego/motion-presets/`. Recovery lives under `${XDG_STATE_HOME:-$HOME/.local/state}/omarchy-motion-presets/`. [CLI, import format and bounds](BACKEND.md).
 
+## Namespace migration
+
+The plugin ID is now `battlelamb.motion-presets`. Update local menu, binding, enabled-plugin and installed-ID references explicitly; a normal updater cannot implicitly rename a plugin ID. Stable preference, custom-data and recovery paths are unchanged. Complete any pending trial/Restore before replacing the installed runtime; retain its source and journals until recovery finishes.
+
 ## Open and manage
 
 Requires Omarchy Quattro, compatible Quickshell/Qt (`qs.Ui`, `qs.Commons`), system Python 3 and **Hyprland Lua 0.56.2**. Other provider versions fail closed. No sibling plugin is required; plugins run unsandboxed inside the shell.
 
 ```sh
 omarchy plugin add https://github.com/Battlelamb/omarchy-motion-presets --enable
-omarchy-shell shell summon leviathan.motion-presets
+omarchy-shell shell summon battlelamb.motion-presets
 # Restore in the panel BEFORE disabling or removing:
-omarchy plugin disable leviathan.motion-presets
-omarchy plugin remove leviathan.motion-presets
+omarchy plugin disable battlelamb.motion-presets
+omarchy plugin remove battlelamb.motion-presets
 ```
 
-Install does not apply a preset or add shortcuts. An existing Super+Space → Appearance entry can summon `leviathan.motion-presets`; preserve existing menu entries if adding one manually.
+Install does not apply a preset or add shortcuts. An existing Super+Space → Appearance entry can summon `battlelamb.motion-presets`; preserve existing menu entries if adding one manually.
 
 ## Recovery limits and checks
 
